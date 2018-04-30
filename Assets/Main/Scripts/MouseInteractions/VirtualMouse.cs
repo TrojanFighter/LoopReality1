@@ -10,6 +10,7 @@ public class VirtualMouse : MonoBehaviour
     
     public void MoveToPosition(Vector3 position)
     {
+        //position=new Vector3(position.x,m_RestorePosition.position.y,position.z);
         transform.position =position;
     }
 

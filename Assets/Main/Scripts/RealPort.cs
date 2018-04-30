@@ -12,6 +12,8 @@ public class RealPort : MonoBehaviour
 	private bool bReleasing = false;
 	public Vector3 mousepadPosition;
 	private LayerMask mousepad, mouseBody;
+
+	public MouseBody lastMouseBody;
 	
 	// Use this for initialization
 	void Start () {
@@ -24,7 +26,7 @@ public class RealPort : MonoBehaviour
 		m_ray= m_camera.ScreenPointToRay(Input.mousePosition);
 		bPressing = Input.GetMouseButton(0);
 		bReleasing = Input.GetMouseButtonUp(0);
-		if (Physics.Raycast(m_ray, out m_padhit, mousepad))
+		if (Physics.Raycast(m_ray.origin,m_ray.direction, out m_padhit, 24f,mousepad))
 		{
 			if (m_padhit.collider == null)
 			{
@@ -34,21 +36,27 @@ public class RealPort : MonoBehaviour
 			{
 				mousepadPosition = m_padhit.point;
 				
-				Debug.Log(m_padhit.collider.gameObject.name+ " mousepadPosition: "+mousepadPosition);
+				//Debug.Log(m_padhit.collider.gameObject.name+ " mousepadPosition: "+mousepadPosition);
+			}
+			if (bReleasing)
+			{
+				mousepadPosition = Vector3.zero;
 			}
 		}
 		
-		if (Physics.Raycast(m_ray, out m_mousehit,mouseBody)) {
+		if (Physics.Raycast(m_ray.origin,m_ray.direction, out m_mousehit,24f,mouseBody)) {
 			if (m_mousehit.collider == null)
 			{
+				Debug.Log(m_mousehit.collider.gameObject.name+ " mousepadPosition: "+mousepadPosition);
 				return;
 			}
 
 			if (bPressing)
 			{
-				if (m_mousehit.collider.GetComponent<MouseBody>())
+				lastMouseBody = m_mousehit.collider.GetComponent<MouseBody>();
+				if (lastMouseBody!=null)
 				{
-					m_mousehit.collider.GetComponent<MouseBody>().Raycasting(mousepadPosition);
+					lastMouseBody.Raycasting(mousepadPosition);
 				}
 				else
 				{
@@ -58,9 +66,9 @@ public class RealPort : MonoBehaviour
 
 			if (bReleasing)
 			{
-				if (m_mousehit.collider.GetComponent<MouseBody>())
+				if (lastMouseBody!=null)
 				{
-					m_mousehit.collider.GetComponent<MouseBody>().RaycastReleased();
+					lastMouseBody.RaycastReleased();
 				}
 			}
 		}
