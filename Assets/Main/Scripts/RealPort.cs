@@ -75,7 +75,7 @@ public class RealPort : MonoBehaviour
 				return;
 			}
 
-			if (bPressing)
+			if (bReleasing)
 			{
 				lastMouseButton = m_padhit.collider.GetComponent<MouseButton>();
 				if (lastMouseButton!=null)
