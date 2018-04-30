@@ -1,0 +1,68 @@
+﻿using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+public class RealPort : MonoBehaviour
+{
+
+	public Camera m_camera;
+	private Ray m_ray;
+	private RaycastHit m_padhit,m_mousehit;
+	private bool bPressing = false;
+	private bool bReleasing = false;
+	public Vector3 mousepadPosition;
+	private LayerMask mousepad, mouseBody;
+	
+	// Use this for initialization
+	void Start () {
+		mousepad=LayerMask.GetMask("MouseInterface");
+		mouseBody=LayerMask.GetMask("MouseBody");
+	}
+	
+	// Update is called once per frame
+	void Update () {
+		m_ray= m_camera.ScreenPointToRay(Input.mousePosition);
+		bPressing = Input.GetMouseButton(0);
+		bReleasing = Input.GetMouseButtonUp(0);
+		if (Physics.Raycast(m_ray, out m_padhit, mousepad))
+		{
+			if (m_padhit.collider == null)
+			{
+				return;
+			}
+			if (bPressing)
+			{
+				mousepadPosition = m_padhit.point;
+				
+				Debug.Log(m_padhit.collider.gameObject.name+ " mousepadPosition: "+mousepadPosition);
+			}
+		}
+		
+		if (Physics.Raycast(m_ray, out m_mousehit,mouseBody)) {
+			if (m_mousehit.collider == null)
+			{
+				return;
+			}
+
+			if (bPressing)
+			{
+				if (m_mousehit.collider.GetComponent<MouseBody>())
+				{
+					m_mousehit.collider.GetComponent<MouseBody>().Raycasting(mousepadPosition);
+				}
+				else
+				{
+					Debug.Log("Pressing "+m_mousehit.collider.gameObject.name);
+				}
+			}
+
+			if (bReleasing)
+			{
+				if (m_mousehit.collider.GetComponent<MouseBody>())
+				{
+					m_mousehit.collider.GetComponent<MouseBody>().RaycastReleased();
+				}
+			}
+		}
+	}
+}
