@@ -63,13 +63,12 @@ public class RealPort : MonoBehaviour
 					Debug.Log("Pressing "+m_mousehit.collider.gameObject.name);
 				}
 			}
-
-			if (bReleasing)
+		}
+		if (bReleasing)
+		{
+			if (lastMouseBody!=null)
 			{
-				if (lastMouseBody!=null)
-				{
-					lastMouseBody.RaycastReleased();
-				}
+				lastMouseBody.RaycastReleased();
 			}
 		}
 	}
