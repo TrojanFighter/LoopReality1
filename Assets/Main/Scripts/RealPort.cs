@@ -11,14 +11,16 @@ public class RealPort : MonoBehaviour
 	private bool bPressing = false;
 	private bool bReleasing = false;
 	public Vector3 mousepadPosition;
-	private LayerMask mousepad, mouseBody;
+	private LayerMask mousepad, mouseBody,mouseButton;
 
 	public MouseBody lastMouseBody;
+	public MouseButton lastMouseButton;
 	
 	// Use this for initialization
 	void Start () {
 		mousepad=LayerMask.GetMask("MouseInterface");
 		mouseBody=LayerMask.GetMask("MouseBody");
+		mouseButton=LayerMask.GetMask("MouseButton");
 	}
 	
 	// Update is called once per frame
@@ -64,6 +66,29 @@ public class RealPort : MonoBehaviour
 				}
 			}
 		}
+
+		if (Physics.Raycast(m_ray.origin, m_ray.direction, out m_padhit, 24f, mouseButton))
+		{
+			if (m_padhit.collider == null)
+			{
+				Debug.Log(m_padhit.collider.gameObject.name+ " mousepadPosition: "+mousepadPosition);
+				return;
+			}
+
+			if (bPressing)
+			{
+				lastMouseButton = m_padhit.collider.GetComponent<MouseButton>();
+				if (lastMouseButton!=null)
+				{
+					lastMouseButton.RaycastReleased();
+				}
+				else
+				{
+					Debug.Log("Pressing "+m_padhit.collider.gameObject.name);
+				}
+			}
+		}
+
 		if (bReleasing)
 		{
 			if (lastMouseBody!=null)
