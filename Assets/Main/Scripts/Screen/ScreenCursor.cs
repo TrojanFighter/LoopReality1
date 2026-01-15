@@ -1,4 +1,4 @@
-﻿using System;
+﻿﻿using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -10,9 +10,46 @@ public class ScreenCursor : MonoBehaviour
     public float computerRange;
     public DisplayPort m_port;
 
+    private LayerMask mouseBody, mouseButton;
+    private MouseBody lastMouseBody;
+    private MouseButton lastMouseButton;
+    private RaycastHit m_hit;
+
     private void Start()
     {
         m_rigidbody = GetComponent<Rigidbody>();
+        mouseBody = LayerMask.GetMask("MouseBody");
+        mouseButton = LayerMask.GetMask("MouseButton");
+    }
+
+    public void Raycasting(bool isClicked)
+    {
+        if (Physics.Raycast(transform.position, transform.forward, out m_hit, 24f, mouseBody))
+        {
+            lastMouseBody = m_hit.collider.GetComponent<MouseBody>();
+            if (lastMouseBody != null && isClicked)
+            {
+                lastMouseBody.Raycasting(transform.position, true);
+            }
+        }
+    }
+
+    public void RaycastReleased()
+    {
+        if (lastMouseBody != null)
+        {
+            lastMouseBody.RaycastReleased();
+            lastMouseBody = null;
+        }
+
+        if (Physics.Raycast(transform.position, transform.forward, out m_hit, 24f, mouseButton))
+        {
+            lastMouseButton = m_hit.collider.GetComponent<MouseButton>();
+            if (lastMouseButton != null)
+            {
+                lastMouseButton.RaycastReleased();
+            }
+        }
     }
 
     public void DeltaMove(Vector3 delta)
